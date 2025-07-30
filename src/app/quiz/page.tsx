@@ -1,64 +1,85 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useQuiz } from '@/context/QuizContext';
-import Timer from '@/components/Timer';
-import Question from '@/components/Question';
-import QuestionOverview from '@/components/QuestionOverview';
-import { QuizData } from '@/types/quiz';
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQuiz } from "@/context/QuizContext";
+import Timer from "@/components/Timer";
+import Question from "@/components/Question";
+import QuestionOverview from "@/components/QuestionOverview";
+import { QuizData } from "@/types/quiz";
 
 export default function QuizPage() {
-  const { state, questions, setQuestions, setCurrentQuestion, submitQuiz, userEmail } = useQuiz();
+  const {
+    state,
+    questions,
+    setQuestions,
+    setCurrentQuestion,
+    submitQuiz,
+    userEmail,
+  } = useQuiz();
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const fetchInProgress = useRef(false);
 
   useEffect(() => {
     if (!userEmail) {
-      router.push('/');
+      router.push("/");
       return;
     }
 
-    const fetchQuestions = async () => {
-      try {
-        const response = await fetch('https://opentdb.com/api.php?amount=15');
-        const data: QuizData = await response.json();
-        
-        if (data.response_code === 0) {
-          setQuestions(data.results);
-          setIsLoading(false);
-        } else {
-          throw new Error('Failed to fetch questions');
-        }
-      } catch (error) {
-        console.error('Error fetching questions:', error);
-        alert('Failed to load quiz questions. Please try again.');
-        router.push('/');
-      }
-    };
+    if (questions.length === 0 && !fetchInProgress.current) {
+      const fetchQuestions = async () => {
+        if (fetchInProgress.current) return;
+        fetchInProgress.current = true;
 
-    if (questions.length === 0) {
+        try {
+          const response = await fetch("https://opentdb.com/api.php?amount=15");
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data: QuizData = await response.json();
+
+          if (data.response_code === 0) {
+            setQuestions(data.results);
+          } else {
+            throw new Error("Failed to fetch questions");
+          }
+        } catch (error) {
+          console.error("Error fetching questions:", error);
+          if (questions.length === 0) {
+            alert("Failed to load quiz questions. Please try again.");
+            router.push("/");
+          }
+        } finally {
+          setIsLoading(false);
+          fetchInProgress.current = false;
+        }
+      };
+
       fetchQuestions();
     } else {
       setIsLoading(false);
     }
-  }, [userEmail, questions.length, setQuestions, router]);
+  }, [userEmail, setQuestions, router]);
 
   useEffect(() => {
     if (state.isSubmitted) {
-      router.push('/results');
+      router.push("/results");
     }
   }, [state.isSubmitted, router]);
 
-  const handleNavigation = (direction: 'prev' | 'next') => {
-    const newIndex = direction === 'prev' 
-      ? Math.max(0, state.currentQuestion - 1)
-      : Math.min(questions.length - 1, state.currentQuestion + 1);
+  const handleNavigation = (direction: "prev" | "next") => {
+    const newIndex =
+      direction === "prev"
+        ? Math.max(0, state.currentQuestion - 1)
+        : Math.min(questions.length - 1, state.currentQuestion + 1);
     setCurrentQuestion(newIndex);
   };
 
   const handleSubmit = () => {
-    if (confirm('Are you sure you want to submit the quiz?')) {
+    if (confirm("Are you sure you want to submit the quiz?")) {
       submitQuiz();
     }
   };
@@ -92,11 +113,11 @@ export default function QuizPage() {
           {/* Main Question Area */}
           <div className="lg:col-span-3 space-y-6">
             <Question />
-            
+
             {/* Navigation Controls */}
             <div className="flex justify-between items-center">
               <button
-                onClick={() => handleNavigation('prev')}
+                onClick={() => handleNavigation("prev")}
                 disabled={state.currentQuestion === 0}
                 className="px-6 py-2 bg-gray-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
               >
@@ -116,7 +137,7 @@ export default function QuizPage() {
                 </button>
               ) : (
                 <button
-                  onClick={() => handleNavigation('next')}
+                  onClick={() => handleNavigation("next")}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Next

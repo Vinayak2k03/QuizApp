@@ -1,7 +1,7 @@
 'use client'
 
 import { Question, QuizState } from "@/types/quiz";
-import { createContext, ReactNode, useContext, useReducer, useState } from "react";
+import { createContext, ReactNode, useContext, useReducer, useState,useCallback} from "react";
 
 interface QuizContextType{
     state:QuizState;
@@ -67,6 +67,10 @@ export const QuizProvider: React.FC<{children:ReactNode}>=({children})=>{
     const [questions,setQuestions]=useState<Question[]>([]);
     const [userEmail,setUserEmail]=useState<string>('');
 
+    const setQuestionsCallback=useCallback((newQuestions:Question[])=>{
+        setQuestions(newQuestions);
+    },[]);
+
     const setCurrentQuestion=(index:number)=>{
         dispatch({type:'SET_CURRENT_QUESTION',payload:index});
         dispatch({type:'VISIT_QUESTION',payload:index});
@@ -93,7 +97,7 @@ export const QuizProvider: React.FC<{children:ReactNode}>=({children})=>{
             value={{
                 state,
                 questions,
-                setQuestions,
+                setQuestions:setQuestionsCallback,
                 setCurrentQuestion,
                 setAnswer,
                 visitQuestion,

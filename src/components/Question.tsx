@@ -1,20 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuiz } from '@/context/QuizContext';
 import { decodeHtmlEntities, getChoicesForQuestion } from '@/utils/quiz';
 
 const Question: React.FC = () => {
   const { state, questions, setAnswer } = useQuiz();
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
-  const [choices, setChoices] = useState<string[]>([]);
 
   const currentQuestion = questions[state.currentQuestion];
 
+  const choices=useMemo(()=>{
+    if(!currentQuestion) return [];
+    return getChoicesForQuestion(currentQuestion);
+  },[currentQuestion?.question]);
+
   useEffect(() => {
     if (currentQuestion) {
-      const questionChoices = getChoicesForQuestion(currentQuestion);
-      setChoices(questionChoices);
       setSelectedAnswer(state.answers[state.currentQuestion] || '');
     }
   }, [currentQuestion, state.currentQuestion, state.answers]);
