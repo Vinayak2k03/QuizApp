@@ -24,11 +24,20 @@ const Timer: React.FC = () => {
     return () => clearInterval(timer);
   }, [state.timeRemaining, state.isSubmitted, updateTimer, submitQuiz, router]);
 
-  const timeColor = state.timeRemaining <= 300 ? 'text-red-600' : 'text-gray-800';
+  const getTimeColor = () => {
+    if (state.timeRemaining <= 60) return 'text-red-500 animate-pulse';
+    if (state.timeRemaining <= 300) return 'text-orange-400';
+    return 'text-gray-200';
+  };
 
   return (
-    <div className={`text-2xl font-bold ${timeColor} bg-white px-4 py-2 rounded-lg shadow`}>
-      Time Remaining: {formatTime(state.timeRemaining)}
+    <div className="bg-gray-800 px-4 py-3 rounded-lg shadow border border-gray-700 flex items-center">
+      <svg className="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span className={`text-xl font-mono font-bold ${getTimeColor()}`}>
+        {formatTime(state.timeRemaining)}
+      </span>
     </div>
   );
 };

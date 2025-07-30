@@ -11,42 +11,43 @@ const QuestionOverview: React.FC = () => {
     const isAnswered = state.answers[index] !== undefined;
     const isCurrent = state.currentQuestion === index;
 
-    if (isCurrent) return 'bg-blue-500 text-white';
-    if (isAnswered) return 'bg-green-500 text-white';
-    if (isVisited) return 'bg-yellow-500 text-white';
-    return 'bg-gray-200 text-gray-700';
+    if (isCurrent) return 'bg-blue-600 text-white ring-2 ring-blue-400';
+    if (isAnswered) return 'bg-green-600 text-white';
+    if (isVisited) return 'bg-yellow-600 text-white';
+    return 'bg-gray-700 text-gray-300';
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-lg">
-      <h3 className="text-lg font-semibold mb-4">Question Overview</h3>
+    <div className="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700">
+      <h3 className="text-lg font-semibold mb-4 text-white">Question Overview</h3>
       <div className="grid grid-cols-5 gap-2">
         {questions.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentQuestion(index)}
-            className={`w-10 h-10 rounded-lg font-medium transition-colors ${getQuestionStatus(index)}`}
+            className={`w-10 h-10 rounded-lg font-medium transition-all hover:scale-105 ${getQuestionStatus(index)}`}
+            title={`Question ${index + 1}${state.answers[index] ? ' (Answered)' : ''}`}
           >
             {index + 1}
           </button>
         ))}
       </div>
-      <div className="mt-4 text-sm">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-          <span>Current</span>
+      <div className="mt-6 text-sm border-t border-gray-700 pt-4">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-4 h-4 bg-blue-600 rounded"></div>
+          <span className="text-gray-300">Current</span>
         </div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-4 h-4 bg-green-500 rounded"></div>
-          <span>Answered</span>
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-4 h-4 bg-green-600 rounded"></div>
+          <span className="text-gray-300">Answered</span>
         </div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-          <span>Visited</span>
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-4 h-4 bg-yellow-600 rounded"></div>
+          <span className="text-gray-300">Visited</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-gray-200 rounded"></div>
-          <span>Not Visited</span>
+          <div className="w-4 h-4 bg-gray-700 rounded"></div>
+          <span className="text-gray-300">Not Visited</span>
         </div>
       </div>
     </div>

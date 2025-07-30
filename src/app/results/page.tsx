@@ -4,9 +4,10 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuiz } from '@/context/QuizContext';
 import { decodeHtmlEntities } from '@/utils/quiz';
+import { formatTime } from '@/utils/quiz';
 
 export default function ResultsPage() {
-  const { state, questions, userEmail,resetQuiz} = useQuiz();
+  const { state, questions, userEmail, resetQuiz } = useQuiz();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,9 +18,10 @@ export default function ResultsPage() {
 
   if (!state.isSubmitted || questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg">Loading results...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-6"></div>
+          <p className="text-lg text-gray-300">Loading results...</p>
         </div>
       </div>
     );
@@ -35,69 +37,99 @@ export default function ResultsPage() {
     return correct;
   };
 
-  const handleTakeAnotherQuiz=()=>{
+  const getScoreColor = (percentage: number) => {
+    if (percentage >= 80) return 'text-green-400';
+    if (percentage >= 60) return 'text-blue-400';
+    if (percentage >= 40) return 'text-yellow-400';
+    return 'text-red-400';
+  };
+
+  const handleTakeAnotherQuiz = () => {
     resetQuiz();
-    router.push('/quiz');
-  }
+    router.push('/');
+  };
 
   const score = calculateScore();
   const percentage = Math.round((score / questions.length) * 100);
+  const timeSpent = 30 * 60 - state.timeRemaining; // 30 minutes in seconds minus remaining time
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gray-900 p-4 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-center mb-4">Quiz Results</h1>
-          <div className="text-center">
-            <div className="text-6xl font-bold text-blue-600 mb-2">
-              {score}/{questions.length}
+        <div className="bg-gray-800 rounded-xl shadow-lg p-8 mb-8 border border-gray-700 animate-fadeIn">
+          <h1 className="text-3xl font-bold text-center mb-6 text-white">Quiz Results</h1>
+          
+          <div className="flex flex-col md:flex-row justify-around items-center gap-6">
+            <div className="text-center">
+              <div className={`text-6xl font-bold mb-2 ${getScoreColor(percentage)}`}>
+                {score}/{questions.length}
+              </div>
+              <div className="text-xl text-gray-400">
+                {percentage}% Correct
+              </div>
             </div>
-            <div className="text-2xl text-gray-600 mb-4">
-              {percentage}% Correct
+            
+            <div className="h-24 w-[1px] bg-gray-700 hidden md:block"></div>
+            
+            <div className="text-center">
+              <div className="text-2xl font-mono font-bold mb-2 text-gray-300">
+                {formatTime(timeSpent)}
+              </div>
+              <div className="text-xl text-gray-400">
+                Time Spent
+              </div>
             </div>
-            <div className="text-lg text-gray-500">
-              Email: {userEmail}
+            
+            <div className="h-24 w-[1px] bg-gray-700 hidden md:block"></div>
+            
+            <div className="text-center">
+              <div className="text-xl font-medium mb-2 text-gray-300 break-all">
+                {userEmail}
+              </div>
+              <div className="text-xl text-gray-400">
+                Email
+              </div>
             </div>
           </div>
         </div>
 
         {/* Question Results */}
-        <div className="space-y-4">
+        <div className="space-y-6 animate-slideIn">
+          <h2 className="text-2xl font-bold text-white mb-4">Question Details</h2>
+          
           {questions.map((question, index) => {
             const userAnswer = state.answers[index];
             const isCorrect = userAnswer === question.correct_answer;
             
             return (
-              <div key={index} className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-lg font-semibold">
-                    Question {index + 1}
-                  </h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              <div key={index} className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-lg font-medium text-white">Question {index + 1}</span>
+                  <span className={`px-3 py-1 rounded-full text-sm ${
+                    isCorrect ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
                   }`}>
                     {isCorrect ? 'Correct' : 'Incorrect'}
                   </span>
                 </div>
                 
-                <p className="text-gray-800 mb-4">
+                <h3 className="text-lg font-medium mb-4 text-gray-300">
                   {decodeHtmlEntities(question.question)}
-                </p>
+                </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium text-gray-700 mb-2">Your Answer:</h4>
+                    <h4 className="font-medium text-gray-400 mb-2">Your Answer:</h4>
                     <p className={`p-3 rounded-lg ${
-                      userAnswer ? (isCorrect ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800') : 'bg-gray-50 text-gray-500'
+                      userAnswer ? (isCorrect ? 'bg-green-900 text-green-300 border border-green-700' : 'bg-red-900 text-red-300 border border-red-700') : 'bg-gray-700 text-gray-400'
                     }`}>
                       {userAnswer ? decodeHtmlEntities(userAnswer) : 'No answer provided'}
                     </p>
                   </div>
                   
                   <div>
-                    <h4 className="font-medium text-gray-700 mb-2">Correct Answer:</h4>
-                    <p className="p-3 rounded-lg bg-green-50 text-green-800">
+                    <h4 className="font-medium text-gray-400 mb-2">Correct Answer:</h4>
+                    <p className="p-3 rounded-lg bg-green-900 text-green-300 border border-green-700">
                       {decodeHtmlEntities(question.correct_answer)}
                     </p>
                   </div>
@@ -108,11 +140,14 @@ export default function ResultsPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-10 mb-8 animate-fadeIn">
           <button
             onClick={handleTakeAnotherQuiz}
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center mx-auto"
           >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
             Take Another Quiz
           </button>
         </div>
