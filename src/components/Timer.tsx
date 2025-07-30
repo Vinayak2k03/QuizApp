@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useQuiz } from '@/context/QuizContext';
 import { formatTime } from '@/utils/quiz';
 import { useRouter } from 'next/navigation';
+import { TimerIcon } from './icons';
 
 const Timer: React.FC = () => {
   const { state, updateTimer, submitQuiz } = useQuiz();
@@ -32,9 +33,8 @@ const Timer: React.FC = () => {
 
   return (
     <div className="bg-gray-800 px-4 py-3 rounded-lg shadow border border-gray-700 flex items-center">
-      <svg className="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
+     <TimerIcon className="w-5 h-5 mr-2 text-blue-400" />
+
       <span className={`text-xl font-mono font-bold ${getTimeColor()}`}>
         {formatTime(state.timeRemaining)}
       </span>

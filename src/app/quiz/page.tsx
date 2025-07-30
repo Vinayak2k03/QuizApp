@@ -8,6 +8,8 @@ import Question from "@/components/Question";
 import QuestionOverview from "@/components/QuestionOverview";
 import { QuizData } from "@/types/quiz";
 
+import { PreviousIcon, NextIcon, CheckmarkIcon } from "@/components/icons";
+
 export default function QuizPage() {
   const {
     state,
@@ -42,9 +44,12 @@ export default function QuizPage() {
           const data: QuizData = await response.json();
 
           if (data.response_code === 0) {
-            const processedQuestions=data.results.map(q=>({
-              ...q,category:q.category.replace(/Entertainment:|Science:/,'').trim()
-            }))
+            const processedQuestions = data.results.map((q) => ({
+              ...q,
+              category: q.category
+                .replace(/Entertainment:|Science:/, "")
+                .trim(),
+            }));
             setQuestions(processedQuestions);
             setIsLoading(false);
           } else {
@@ -62,10 +67,10 @@ export default function QuizPage() {
       };
 
       fetchQuestions();
-    } else if(questions.length>0){
+    } else if (questions.length > 0) {
       setIsLoading(false);
     }
-  }, [userEmail, setQuestions, router,questions.length]);
+  }, [userEmail, setQuestions, router, questions.length]);
 
   useEffect(() => {
     if (state.isSubmitted) {
@@ -185,19 +190,7 @@ export default function QuizPage() {
                 className="px-6 py-2 bg-gray-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition-colors"
               >
                 <div className="flex items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
+                  <PreviousIcon className="w-4 h-4 mr-1" />
                   Previous
                 </div>
               </button>
@@ -213,19 +206,7 @@ export default function QuizPage() {
                 >
                   <div className="flex items-center">
                     Submit Quiz
-                    <svg
-                      className="w-4 h-4 ml-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                    <CheckmarkIcon className="w-4 h-4 ml-1" />
                   </div>
                 </button>
               ) : (
@@ -235,19 +216,7 @@ export default function QuizPage() {
                 >
                   <div className="flex items-center">
                     Next
-                    <svg
-                      className="w-4 h-4 ml-1"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                    <NextIcon className="w-4 h-4 ml-1" />
                   </div>
                 </button>
               )}

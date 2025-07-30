@@ -30,11 +30,13 @@ const Question: React.FC = () => {
     return <div className="text-gray-300">Loading question...</div>;
   }
 
-  // Format category for better display
-  const displayCategory = currentQuestion.category
-    .replace(/Entertainment:/, '')
-    .replace(/Science:/, '')
-    .trim();
+  // Format category for better display and decode HTML entities
+  const displayCategory = decodeHtmlEntities(
+    currentQuestion.category
+      .replace(/Entertainment:/, '')
+      .replace(/Science:/, '')
+      .trim()
+  );
 
   const getDifficultyStyle = () => {
     switch (currentQuestion.difficulty) {
