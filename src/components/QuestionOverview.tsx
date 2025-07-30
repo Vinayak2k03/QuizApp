@@ -6,11 +6,13 @@ import { useQuiz } from '@/context/QuizContext';
 const QuestionOverview: React.FC = () => {
   const { state, questions, setCurrentQuestion } = useQuiz();
 
+  // Determine the visual status of each question button
   const getQuestionStatus = (index: number) => {
     const isVisited = state.visitedQuestions.has(index);
     const isAnswered = state.answers[index] !== undefined;
     const isCurrent = state.currentQuestion === index;
 
+    // Return appropriate CSS classes based on question status
     if (isCurrent) return 'bg-blue-600 text-white ring-2 ring-blue-400';
     if (isAnswered) return 'bg-green-600 text-white';
     if (isVisited) return 'bg-yellow-600 text-white';
@@ -20,6 +22,8 @@ const QuestionOverview: React.FC = () => {
   return (
     <div className="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700">
       <h3 className="text-lg font-semibold mb-4 text-white">Question Overview</h3>
+      
+      {/* Grid of question number buttons */}
       <div className="grid grid-cols-5 gap-2">
         {questions.map((_, index) => (
           <button
@@ -32,6 +36,8 @@ const QuestionOverview: React.FC = () => {
           </button>
         ))}
       </div>
+      
+      {/* Legend explaining the color coding */}
       <div className="mt-6 text-sm border-t border-gray-700 pt-4">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-4 h-4 bg-blue-600 rounded"></div>

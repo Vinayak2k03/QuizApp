@@ -7,7 +7,6 @@ import Timer from "@/components/Timer";
 import Question from "@/components/Question";
 import QuestionOverview from "@/components/QuestionOverview";
 import { QuizData } from "@/types/quiz";
-
 import { PreviousIcon, NextIcon, CheckmarkIcon } from "@/components/icons";
 
 export default function QuizPage() {
@@ -21,14 +20,19 @@ export default function QuizPage() {
   } = useQuiz();
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+
+  // Use a ref to track API call status to prevent duplicate requests
+  // This helps prevent 429 "Too Many Requests" errors
   const fetchInProgress = useRef(false);
 
   useEffect(() => {
+    // Redirect to home page if no email is provided
     if (!userEmail) {
       router.push("/");
       return;
     }
 
+    // Only fetch questions if we don't have any and a fetch is not already in progress
     if (questions.length === 0 && !fetchInProgress.current) {
       const fetchQuestions = async () => {
         if (fetchInProgress.current) return;
@@ -44,12 +48,15 @@ export default function QuizPage() {
           const data: QuizData = await response.json();
 
           if (data.response_code === 0) {
+            // Process categories to ensure proper display
+            // OpenTDB API returns categories with prefixes and HTML entities
             const processedQuestions = data.results.map((q) => ({
               ...q,
               category: q.category
                 .replace(/Entertainment:|Science:/, "")
                 .trim(),
             }));
+
             setQuestions(processedQuestions);
             setIsLoading(false);
           } else {
@@ -57,41 +64,50 @@ export default function QuizPage() {
           }
         } catch (error) {
           console.error("Error fetching questions:", error);
+          // Only show alert and redirect if no questions were loaded
           if (questions.length === 0) {
             alert("Failed to load quiz questions. Please try again.");
             router.push("/");
+          } else {
+            setIsLoading(false);
           }
         } finally {
+          // Always reset the fetch flag when done
           fetchInProgress.current = false;
         }
       };
 
       fetchQuestions();
     } else if (questions.length > 0) {
+      // If questions are already loaded, just set loading to false
       setIsLoading(false);
     }
-  }, [userEmail, setQuestions, router, questions.length]);
+  }, [userEmail, setQuestions, router]);
 
+  // Redirect to results page when quiz is submitted
   useEffect(() => {
     if (state.isSubmitted) {
       router.push("/results");
     }
   }, [state.isSubmitted, router]);
 
+  // Handle navigation between questions
   const handleNavigation = (direction: "prev" | "next") => {
     const newIndex =
       direction === "prev"
-        ? Math.max(0, state.currentQuestion - 1)
-        : Math.min(questions.length - 1, state.currentQuestion + 1);
+        ? Math.max(0, state.currentQuestion - 1) // Don't go below 0
+        : Math.min(questions.length - 1, state.currentQuestion + 1); // Don't exceed max questions
     setCurrentQuestion(newIndex);
   };
 
+  // Handle quiz submission with confirmation
   const handleSubmit = () => {
     if (confirm("Are you sure you want to submit the quiz?")) {
       submitQuiz();
     }
   };
 
+  // Show skeleton loader while questions are being fetched
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 p-4 py-8">
@@ -138,6 +154,7 @@ export default function QuizPage() {
                 <div className="h-6 w-11/12 bg-gray-700 rounded animate-pulse mb-8"></div>
 
                 <div className="space-y-3">
+                  {/* Render 4 skeleton option buttons */}
                   {[...Array(4)].map((_, index) => (
                     <div
                       key={index}
@@ -173,7 +190,7 @@ export default function QuizPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Question Overview */}
+          {/* Question Overview panel - shows all questions status */}
           <div className="lg:col-span-1 animate-fadeIn">
             <QuestionOverview />
           </div>
@@ -199,6 +216,7 @@ export default function QuizPage() {
                 {state.currentQuestion + 1} of {questions.length}
               </span>
 
+              {/* Show Submit button on last question, Next button otherwise */}
               {state.currentQuestion === questions.length - 1 ? (
                 <button
                   onClick={handleSubmit}

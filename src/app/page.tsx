@@ -82,45 +82,18 @@ export default function Home() {
             <p>15 questions total</p>
           </div>
           <div className="flex items-center text-gray-400">
-            <svg
-              className="w-4 h-4 mr-2 text-blue-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <CheckCircleIcon className="w-4 h-4 mr-2 text-blue-400" />
+
             <p>30 minutes time limit</p>
           </div>
           <div className="flex items-center text-gray-400">
-            <svg
-              className="w-4 h-4 mr-2 text-blue-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <CheckCircleIcon className="w-4 h-4 mr-2 text-blue-400" />
+
             <p>Navigate between questions freely</p>
           </div>
           <div className="flex items-center text-gray-400">
-            <svg
-              className="w-4 h-4 mr-2 text-blue-400"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <CheckCircleIcon className="w-4 h-4 mr-2 text-blue-400" />
+
             <p>Quiz auto-submits when time expires</p>
           </div>
         </div>

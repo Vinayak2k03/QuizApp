@@ -5,22 +5,28 @@ import { useQuiz } from '@/context/QuizContext';
 import { decodeHtmlEntities, getChoicesForQuestion } from '@/utils/quiz';
 
 const Question: React.FC = () => {
+  // Access quiz state and functions from the context
   const { state, questions, setAnswer } = useQuiz();
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
 
+  // Get the current question based on the current question index
   const currentQuestion = questions[state.currentQuestion];
 
+  // useMemo ensures choices are only regenerated when the question changes
+  // This prevents unnecessary re-shuffling of choices when component re-renders
   const choices = useMemo(() => {
     if (!currentQuestion) return [];
     return getChoicesForQuestion(currentQuestion);
   }, [currentQuestion?.question]);
 
+  // Sync the selected answer with the global state when navigating between questions
   useEffect(() => {
     if (currentQuestion) {
       setSelectedAnswer(state.answers[state.currentQuestion] || '');
     }
   }, [currentQuestion, state.currentQuestion, state.answers]);
 
+  // Update both local state and global state when an answer is selected
   const handleAnswerSelect = (answer: string) => {
     setSelectedAnswer(answer);
     setAnswer(state.currentQuestion, answer);
@@ -30,7 +36,8 @@ const Question: React.FC = () => {
     return <div className="text-gray-300">Loading question...</div>;
   }
 
-  // Format category for better display and decode HTML entities
+  // Clean up and decode the category text
+  // OpenTDB API returns categories with prefixes like "Entertainment:" and HTML entities
   const displayCategory = decodeHtmlEntities(
     currentQuestion.category
       .replace(/Entertainment:/, '')
@@ -38,6 +45,7 @@ const Question: React.FC = () => {
       .trim()
   );
 
+  // Change difficulty badge color based on question difficulty
   const getDifficultyStyle = () => {
     switch (currentQuestion.difficulty) {
       case 'easy':
@@ -67,6 +75,7 @@ const Question: React.FC = () => {
       </h2>
 
       <div className="space-y-3">
+        {/* Map over choices array to render answer buttons */}
         {choices.map((choice, index) => (
           <button
             key={index}
@@ -77,6 +86,7 @@ const Question: React.FC = () => {
                 : 'border-gray-700 bg-gray-900 text-gray-300 hover:border-gray-600'
             }`}
           >
+            {/* Convert index to letter (0 -> A, 1 -> B, etc.) */}
             <span className="font-medium mr-3 text-blue-400">
               {String.fromCharCode(65 + index)}.
             </span>
