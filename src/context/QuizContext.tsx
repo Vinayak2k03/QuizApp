@@ -12,6 +12,7 @@ interface QuizContextType{
     visitQuestion:(index:number)=>void;
     updateTimer:(time:number)=>void;
     submitQuiz:()=>void;
+    resetQuiz:()=>void;
     userEmail:string;
     setUserEmail:(email:string)=>void;
 }
@@ -27,7 +28,8 @@ type QuizAction=
     | {type: 'SET_ANSWER',payload:{questionIndex:number,answer:string}}
     | {type: 'VISIT_QUESTION', payload:number}
     | {type: 'UPDATE_TIMER',payload:number}
-    | {type: 'SUBMIT_QUIZ'};
+    | {type: 'SUBMIT_QUIZ'}
+    | {type: 'RESET_QUIZ'};
 
 const quizReducer=(state:QuizState,action:QuizAction):QuizState=>{
     switch(action.type){
@@ -47,6 +49,10 @@ const quizReducer=(state:QuizState,action:QuizAction):QuizState=>{
             return {...state,timeRemaining:action.payload};
         case 'SUBMIT_QUIZ':
             return {...state,isSubmitted:true};
+        case 'RESET_QUIZ':
+            return {
+                ...initialState
+            };
         default:
             return state;
     
@@ -92,6 +98,11 @@ export const QuizProvider: React.FC<{children:ReactNode}>=({children})=>{
         dispatch({type:'SUBMIT_QUIZ'});
     };
 
+    const resetQuiz=useCallback(()=>{
+        dispatch({type:'RESET_QUIZ'});
+        setQuestions([]);
+    },[]);
+
     return (
         <QuizContext.Provider
             value={{
@@ -103,6 +114,7 @@ export const QuizProvider: React.FC<{children:ReactNode}>=({children})=>{
                 visitQuestion,
                 updateTimer,
                 submitQuiz,
+                resetQuiz,
                 userEmail,
                 setUserEmail
             }}

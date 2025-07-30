@@ -6,7 +6,7 @@ import { useQuiz } from '@/context/QuizContext';
 import { decodeHtmlEntities } from '@/utils/quiz';
 
 export default function ResultsPage() {
-  const { state, questions, userEmail } = useQuiz();
+  const { state, questions, userEmail,resetQuiz} = useQuiz();
   const router = useRouter();
 
   useEffect(() => {
@@ -34,6 +34,11 @@ export default function ResultsPage() {
     });
     return correct;
   };
+
+  const handleTakeAnotherQuiz=()=>{
+    resetQuiz();
+    router.push('/quiz');
+  }
 
   const score = calculateScore();
   const percentage = Math.round((score / questions.length) * 100);
@@ -105,7 +110,7 @@ export default function ResultsPage() {
         {/* Action Buttons */}
         <div className="text-center mt-8">
           <button
-            onClick={() => router.push('/')}
+            onClick={handleTakeAnotherQuiz}
             className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Take Another Quiz
